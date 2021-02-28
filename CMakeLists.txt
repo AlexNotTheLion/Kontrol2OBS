@@ -1,17 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Change obs-plugintemplate to your plugin's name in a machine-readable format
-# (e.g.: obs-myawesomeplugin) and set 
+# (e.g.: obs-myawesomeplugin) and set
 project(obs-kontrol VERSION 1.0.0)
 
 set(CMAKE_PREFIX_PATH "${QTDIR}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
-
-# In case you need C++
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-DASIO_STANDALONE)
 
 if (WIN32 OR APPLE)
 include(external/FindLibObs.cmake)
@@ -20,44 +19,26 @@ endif()
 find_package(LibObs REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
-configure_file(
-    src/plugin-macros.h.in
-    ../src/plugin-macros.generated.h
-)
-configure_file(
-    installer/installer-macOS.pkgproj.in
-    ../installer/installer-macOS.generated.pkgproj
-)
-configure_file(
-    installer/installer-Windows.iss.in
-    ../installer/installer-Windows.generated.iss
-)
 
-configure_file(
-    ci/ci_includes.sh.in
-    ../ci/ci_includes.generated.sh
-)
-configure_file(
-    ci/ci_includes.cmd.in
-    ../ci/ci_includes.generated.cmd
-)
 
 set(PLUGIN_SOURCES
-	src/plugin-main.c)
+	src/plugin-main.cpp)
 
 set(PLUGIN_HEADERS
-	src/plugin-macros.generated.h)
+	src/plugin-main.h)
 
 # --- Platform-independent build settings ---
-add_library(${CMAKE_PROJECT_NAME} MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
+add_library(obs-kontrol  MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
 include_directories(
 	"${LIBOBS_INCLUDE_DIR}/../UI/obs-frontend-api"
+        SYSTEM
 	${Qt5Core_INCLUDES}
 	${Qt5Widgets_INCLUDES}
+        "${CMAKE_SOURCE_DIR}/UI"
 )
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
+target_link_libraries(obs-kontrol
 	libobs
 	Qt5::Core
 	Qt5::Widgets
@@ -89,7 +70,7 @@ if(WIN32)
 		"${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/UI"
 	)
 
-	target_link_libraries(${CMAKE_PROJECT_NAME}
+	target_link_libraries(obs-kontrol
 		"${OBS_FRONTEND_LIB}"
     )
 
@@ -97,11 +78,11 @@ if(WIN32)
 	# The "release" folder has a structure similar OBS' one on Windows
 	set(RELEASE_DIR "${PROJECT_SOURCE_DIR}/release")
 
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    add_custom_command(TARGET obs-kontrol  POST_BUILD
         # If config is Release or RelWithDebInfo, package release files
         COMMAND if $<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>==1 (
             "${CMAKE_COMMAND}" -E make_directory
-                "${RELEASE_DIR}/data/obs-plugins/${CMAKE_PROJECT_NAME}"
+                "${RELEASE_DIR}/data/obs-plugins/obs-kontrol"
                 "${RELEASE_DIR}/obs-plugins/${ARCH_NAME}"
         )
 
@@ -113,39 +94,39 @@ if(WIN32)
 
         COMMAND if $<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>==1 (
             "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>"
+                "$<TARGET_FILE:obs-kontrol>"
                 "${RELEASE_DIR}/obs-plugins/${ARCH_NAME}"
         )
 
         # If config is RelWithDebInfo, copy the pdb file
         COMMAND if $<CONFIG:RelWithDebInfo>==1 (
             "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_PDB_FILE:${CMAKE_PROJECT_NAME}>"
+                "$<TARGET_PDB_FILE:obs-kontrol>"
                 "${RELEASE_DIR}/obs-plugins/${ARCH_NAME}"
         )
 
         # Copy to obs-studio dev environment for immediate testing
         COMMAND if $<CONFIG:Debug>==1 (
             "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>"
+                "$<TARGET_FILE:obs-kontrol>"
                 "${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/rundir/$<CONFIG>/obs-plugins/${ARCH_NAME}"
         )
 
         COMMAND if $<CONFIG:Debug>==1 (
             "${CMAKE_COMMAND}" -E copy
-                "$<TARGET_PDB_FILE:${CMAKE_PROJECT_NAME}>"
+                "$<TARGET_PDB_FILE:obs-kontrol>"
                 "${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/rundir/$<CONFIG>/obs-plugins/${ARCH_NAME}"
         )
 
         COMMAND if $<CONFIG:Debug>==1 (
             "${CMAKE_COMMAND}" -E make_directory
-                "${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/rundir/$<CONFIG>/data/obs-plugins/${CMAKE_PROJECT_NAME}"
+                "${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/rundir/$<CONFIG>/data/obs-plugins/obs-kontrol"
         )
 
         COMMAND if $<CONFIG:Debug>==1 (
             "${CMAKE_COMMAND}" -E copy_directory
                 "${PROJECT_SOURCE_DIR}/data"
-                "${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/rundir/$<CONFIG>/data/obs-plugins/${CMAKE_PROJECT_NAME}"
+                "${LIBOBS_INCLUDE_DIR}/../${OBS_BUILDDIR_ARCH}/rundir/$<CONFIG>/data/obs-plugins/obs-kontrol"
         )
     )
 	# --- End of sub-section ---
@@ -157,8 +138,8 @@ endif()
 if(UNIX AND NOT APPLE)
     include(GNUInstallDirs)
 
-	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PREFIX "")
-	target_link_libraries(${CMAKE_PROJECT_NAME} obs-frontend-api)
+	set_target_properties(obs-kontrol  PROPERTIES PREFIX "")
+	target_link_libraries(obs-kontrol  obs-frontend-api)
 
 	file(GLOB locale_files data/locale/*.ini)
 
@@ -166,7 +147,7 @@ if(UNIX AND NOT APPLE)
 		LIBRARY DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/obs-plugins")
 
 	install(FILES ${locale_files}
-		DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/obs/obs-plugins/${CMAKE_PROJECT_NAME}/locale")
+		DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/obs/obs-plugins/obs-kontrol/locale")
 endif()
 # --- End of section ---
 
@@ -174,7 +155,9 @@ endif()
 if(APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -fvisibility=default")
 
-	set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PREFIX "")
-	target_link_libraries(${CMAKE_PROJECT_NAME} "${OBS_FRONTEND_LIB}")
+	set_target_properties(obs-kontrol PROPERTIES PREFIX "")
+	target_link_libraries(obs-kontrol "${OBS_FRONTEND_LIB}")
 endif()
 # -- End of section --
+install_obs_plugin_with_data(obs-kontrol data)
+set_target_properties(obs-kontrol PROPERTIES FOLDER "plugins/obs-kontrol")
