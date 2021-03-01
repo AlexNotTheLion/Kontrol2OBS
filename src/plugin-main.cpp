@@ -16,14 +16,15 @@
 #include "plugin-main.h"
 
 #include "forms/settings-dialog.h"
+#include "events.h"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
 bool obs_module_load(void)
 {
-	blog(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 
+	//setup
 	blog(LOG_DEBUG, "Setup UI");
 
 	obs_frontend_push_ui_translation(obs_module_get_string);
@@ -41,8 +42,9 @@ bool obs_module_load(void)
 		plugin_window->ToggleShowHide();
 	});
 
-	blog(LOG_DEBUG, "OBSMIDI: Setup Complete");
+	blog(LOG_DEBUG, "OBSKONTROL: Setup Complete");
 
+	blog(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 
 	return true;
 }
