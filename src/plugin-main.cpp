@@ -28,11 +28,11 @@ bool obs_module_load(void)
 
 	obs_frontend_push_ui_translation(obs_module_get_string);
 	QMainWindow *mainWindow = (QMainWindow *)obs_frontend_get_main_window();
-	plugin_window = new PluginWindow(mainWindow);
+	plugin_window = new SettingsDialog(mainWindow);
 	obs_frontend_pop_ui_translation();
 
 	const char *menuActionText =
-		obs_module_text("OBSWebsocket.Settings.DialogTitle");
+		obs_module_text("OBS-kontrol Settings");
 	QAction *menuAction =
 		(QAction *)obs_frontend_add_tools_menu_qaction(menuActionText);
 	QObject::connect(menuAction, &QAction::triggered, [] {
