@@ -22,10 +22,12 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
 
 set(PLUGIN_SOURCES
-	src/plugin-main.cpp)
+	src/plugin-main.cpp
+	src/forms/settings-dialog.cpp)
 
 set(PLUGIN_HEADERS
-	src/plugin-main.h)
+	src/plugin-main.h
+	src/forms/settings-dialog.h)
 
 # --- Platform-independent build settings ---
 add_library(obs-kontrol  MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})

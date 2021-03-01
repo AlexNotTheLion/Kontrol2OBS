@@ -1,6 +1,6 @@
 /*
-Plugin Name
-Copyright (C) <Year> <Developer> <Email Address>
+obs-websocket
+Copyright (C) 2016-2019	Stéphane Lepin <stephane.lepin@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,19 +16,27 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
-#ifndef PLUGINNAME_H
-#define PLUGINNAME_H
-
-#define PLUGIN_NAME "obs-kontrol"
-#define PLUGIN_VERSION "1.0.0"
-
-#define blog(level, msg, ...) blog(level, "[" PLUGIN_NAME "] " msg, ##__VA_ARGS__)
-
-#endif // PLUGINNAME_H
-
 #pragma once
-#include <QObject>
-#include <obs.hpp>
 
-class PluginWindow;
-static PluginWindow *plugin_window;
+#include <QtWidgets/QDialog>
+
+#include "ui_settings-dialog.h"
+
+class PluginWindow : public QDialog
+{
+	Q_OBJECT
+
+public:
+	explicit PluginWindow(QWidget *parent = 0);
+	~PluginWindow();
+	void showEvent(QShowEvent* event);
+	void ToggleShowHide();
+	void PreparePasswordEntry();
+
+private Q_SLOTS:
+	void AuthCheckboxChanged();
+	void FormAccepted();
+
+private:
+	Ui::PluginWindow *ui;
+};
