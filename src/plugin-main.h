@@ -29,6 +29,5 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #pragma once
 #include <QObject>
 #include <obs.hpp>
-
-class PluginWindow;
-static PluginWindow *plugin_window;
+class SettingsDialog;
+static SettingsDialog *plugin_window;
