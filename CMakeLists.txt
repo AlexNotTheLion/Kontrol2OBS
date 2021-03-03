@@ -23,10 +23,12 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
 set(PLUGIN_SOURCES
 	src/plugin-main.cpp
+	src/events.cpp
 	src/forms/settings-dialog.cpp)
 
 set(PLUGIN_HEADERS
 	src/plugin-main.h
+	src/events.h
 	src/forms/settings-dialog.h)
 
 # --- Platform-independent build settings ---

@@ -31,3 +31,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <obs.hpp>
 class SettingsDialog;
 static SettingsDialog *plugin_window;
+
+class Events;
+typedef std::shared_ptr<Events> eventsPtr;
+eventsPtr GetEventsSystem();
