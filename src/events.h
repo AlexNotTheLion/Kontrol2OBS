@@ -16,15 +16,22 @@ class Events : public QObject{
 public:
 	explicit Events();
 	~Events() override;
+	void startup();
+	void shutdown();
 
 	void connectSourceSignals(obs_source_t *source);
 	void disconnectSourceSignals(obs_source_t *source);
 
 private:
+	void BroadcastCustomMessage(const char *name, bool state);
 
 	static void OnSourceMuteChange(void *param, calldata_t *data);
 	static void OnSourceVolumeChange(void *param, calldata_t *data);
 
 	static void OnSourceCreate(void *param, calldata_t *data);
 	static void OnSourceDestroy(void *param, calldata_t *data);
+
+	static void FrontendEventHandler(enum obs_frontend_event event, void *privateData);
+
+
 };

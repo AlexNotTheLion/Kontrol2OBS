@@ -35,3 +35,6 @@ static SettingsDialog *plugin_window;
 class Events;
 typedef std::shared_ptr<Events> eventsPtr;
 eventsPtr GetEventsSystem();
+
+class BoardController;
+typedef std::shared_ptr<BoardController> boardControllerPtr;

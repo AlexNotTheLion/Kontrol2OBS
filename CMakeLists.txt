@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 # Change obs-plugintemplate to your plugin's name in a machine-readable format
 # (e.g.: obs-myawesomeplugin) and set
-project(obs-kontrol VERSION 1.0.0)
+project(kontrol2obs VERSION 1.0.0)
 
 set(CMAKE_PREFIX_PATH "${QTDIR}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -19,16 +19,23 @@ endif()
 find_package(LibObs REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
+add_subdirectory(src/RtMidi17)
+set(rtmidi_DEPS RtMidi17)
+include_directories(src/RtMidi17)
 
 
 set(PLUGIN_SOURCES
-	src/plugin-main.cpp
+	src/kontrol2obs.cpp
 	src/events.cpp
+	src/obs-controller.cpp
+	src/board-controller.cpp
 	src/forms/settings-dialog.cpp)
 
 set(PLUGIN_HEADERS
-	src/plugin-main.h
+	src/kontrol2obs.h
 	src/events.h
+	src/obs-controller.h
+	src/board-controller.h
 	src/forms/settings-dialog.h)
 
 # --- Platform-independent build settings ---
@@ -44,6 +51,7 @@ include_directories(
 
 target_link_libraries(obs-kontrol
 	libobs
+	${rtmidi_DEPS}
 	Qt5::Core
 	Qt5::Widgets
 )

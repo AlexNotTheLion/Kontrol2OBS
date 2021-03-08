@@ -13,28 +13,33 @@
 #include <iostream>
 #include <utility>
 
-#include "plugin-main.h"
+#include "kontrol2obs.h"
 
 #include "forms/settings-dialog.h"
 #include "events.h"
+
+#include "board-controller.h"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
 eventsPtr _eventsSystem;
+boardControllerPtr _boardController;
 
 bool obs_module_load(void)
 {
-	//setup
-	blog(LOG_DEBUG, "Setup UI");
+	//setup board
+	_boardController = boardControllerPtr(new BoardController());
 
+	//setup events
 	_eventsSystem = eventsPtr(new Events());
 
+	blog(LOG_DEBUG, "Setup UI");
 	//setup ui
 	blog(LOG_DEBUG, "Kontrol - setting up UI");
 	QMainWindow *mainWindow = (QMainWindow *)obs_frontend_get_main_window();
 	plugin_window = new SettingsDialog(mainWindow);
-	const char *menuActionText = obs_module_text("Obs Kontrol Settings");
+	const char *menuActionText = obs_module_text("Kontrol2Obs Settings");
 	QAction *menuAction = (QAction *)obs_frontend_add_tools_menu_qaction(menuActionText);
 	QObject::connect(menuAction, &QAction::triggered, [] {
 		// The settings dialog belongs to the main window. Should be ok
